@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: sfms_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: sfms_db
+      POSTGRES_USER: sfms_user
+      POSTGRES_PASSWORD: sfms_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
