@@ -72,10 +72,16 @@ WSGI_APPLICATION = 'sfms.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'sfms_db',
+        'USER': 'sfms_user',
+        'PASSWORD': 'sfms_password',
+        'HOST': 'localhost',  # IMPORTANT
+        'PORT': '5433',
     }
 }
 
