@@ -13,7 +13,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
-
+  redis:
+    image: redis:7
+    container_name: sfms_redis
+    restart: always
+    ports:
+      - "6379:6379"
   web:
     build: ./backend
     container_name: sfms_django
