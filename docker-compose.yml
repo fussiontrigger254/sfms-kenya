@@ -1,6 +1,6 @@
-version: "3.9"
 
 services:
+
   db:
     image: postgres:15
     container_name: sfms_postgres
@@ -13,28 +13,72 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+
   redis:
     image: redis:7
     container_name: sfms_redis
     restart: always
     ports:
       - "6379:6379"
+
   web:
     build: ./backend
     container_name: sfms_django
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "cd sfms && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - redis
     environment:
+      DJANGO_SETTINGS_MODULE: sfms.settings
       DB_NAME: sfms_db
       DB_USER: sfms_user
       DB_PASSWORD: sfms_password
       DB_HOST: db
       DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+
+  celery_worker:
+    build: ./backend
+    container_name: sfms_celery_worker
+    command: sh -c "cd sfms && celery -A sfms worker --loglevel=info"
+
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: sfms.settings
+      DB_NAME: sfms_db
+      DB_USER: sfms_user
+      DB_PASSWORD: sfms_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+    restart: always
+
+  celery_beat:
+    build: ./backend
+    container_name: sfms_celery_beat
+    command: sh -c "cd sfms && celery -A sfms beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: sfms.settings
+      DB_NAME: sfms_db
+      DB_USER: sfms_user
+      DB_PASSWORD: sfms_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+    restart: always
 
 volumes:
   postgres_data:
