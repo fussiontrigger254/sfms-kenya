@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'farms',
     'crops',
     'notifications',
+    'livestock',
 ]
 
 MIDDLEWARE = [
