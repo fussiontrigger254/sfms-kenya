@@ -17,7 +17,7 @@ services:
   redis:
     image: redis:7
     container_name: sfms_redis
-    restart: always
+    restart: unless-stopped
     ports:
       - "6379:6379"
 
@@ -34,6 +34,7 @@ services:
       - redis
     environment:
       DJANGO_SETTINGS_MODULE: sfms.settings
+      PYTHONPATH: /app/sfms
       DB_NAME: sfms_db
       DB_USER: sfms_user
       DB_PASSWORD: sfms_password
@@ -53,6 +54,7 @@ services:
       - redis
     environment:
       DJANGO_SETTINGS_MODULE: sfms.settings
+      PYTHONPATH: /app/sfms
       DB_NAME: sfms_db
       DB_USER: sfms_user
       DB_PASSWORD: sfms_password
@@ -72,6 +74,7 @@ services:
       - redis
     environment:
       DJANGO_SETTINGS_MODULE: sfms.settings
+      PYTHONPATH: /app/sfms
       DB_NAME: sfms_db
       DB_USER: sfms_user
       DB_PASSWORD: sfms_password

@@ -110,12 +110,17 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_WORKER_POOL = 'solo'
+
+# Africa's Talking
+AT_USERNAME = 'sandbox'       
+AT_API_KEY  = '6cba9bed5bbdfa4d140a4ba47dcaea7fe7855e06ae21fd3054a2ac732b914c56d738d35d'
+AT_SENDER_ID = 'SFMS'
 
 
 
