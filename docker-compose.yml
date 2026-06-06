@@ -1,10 +1,9 @@
-
 services:
 
   db:
     image: postgres:15
     container_name: sfms_postgres
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_DB: sfms_db
       POSTGRES_USER: sfms_user
@@ -13,13 +12,23 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sfms_user -d sfms_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7
     container_name: sfms_redis
-    restart: unless-stopped
+    restart: on-failure
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   web:
     build: ./backend
@@ -30,8 +39,11 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: on-failure
     environment:
       DJANGO_SETTINGS_MODULE: sfms.settings
       PYTHONPATH: /app/sfms
@@ -46,12 +58,13 @@ services:
     build: ./backend
     container_name: sfms_celery_worker
     command: sh -c "cd sfms && celery -A sfms worker --loglevel=info"
-
     volumes:
       - ./backend:/app
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DJANGO_SETTINGS_MODULE: sfms.settings
       PYTHONPATH: /app/sfms
@@ -61,7 +74,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       REDIS_URL: redis://redis:6379/0
-    restart: always
+    restart: on-failure
 
   celery_beat:
     build: ./backend
@@ -70,8 +83,10 @@ services:
     volumes:
       - ./backend:/app
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DJANGO_SETTINGS_MODULE: sfms.settings
       PYTHONPATH: /app/sfms
@@ -82,8 +97,7 @@ services:
       DB_PORT: 5432
       REDIS_URL: redis://redis:6379/0
       FIREBASE_CREDENTIALS: /app/sfms/sfms/serviceAccountKey.json
-      
-    restart: always
+    restart: on-failure
 
 volumes:
   postgres_data:
