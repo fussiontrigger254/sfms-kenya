@@ -65,12 +65,13 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'sfms.firebase_authentication.FirebaseAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',  # add this line
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ),
+    ],
 }
 
 WSGI_APPLICATION = 'sfms.wsgi.application'
