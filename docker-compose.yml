@@ -1,0 +1,103 @@
+services:
+
+  db:
+    image: postgres:15
+    container_name: sfms_postgres
+    restart: on-failure
+    environment:
+      POSTGRES_DB: sfms_db
+      POSTGRES_USER: sfms_user
+      POSTGRES_PASSWORD: sfms_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sfms_user -d sfms_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: sfms_redis
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: ./backend
+    container_name: sfms_django
+    command: sh -c "cd sfms && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: on-failure
+    environment:
+      DJANGO_SETTINGS_MODULE: sfms.settings
+      PYTHONPATH: /app/sfms
+      DB_NAME: sfms_db
+      DB_USER: sfms_user
+      DB_PASSWORD: sfms_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+
+  celery_worker:
+    build: ./backend
+    container_name: sfms_celery_worker
+    command: sh -c "cd sfms && celery -A sfms worker --loglevel=info"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: sfms.settings
+      PYTHONPATH: /app/sfms
+      DB_NAME: sfms_db
+      DB_USER: sfms_user
+      DB_PASSWORD: sfms_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+    restart: on-failure
+
+  celery_beat:
+    build: ./backend
+    container_name: sfms_celery_beat
+    command: sh -c "cd sfms && celery -A sfms beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: sfms.settings
+      PYTHONPATH: /app/sfms
+      DB_NAME: sfms_db
+      DB_USER: sfms_user
+      DB_PASSWORD: sfms_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+      FIREBASE_CREDENTIALS: /app/sfms/sfms/serviceAccountKey.json
+    restart: on-failure
+
+volumes:
+  postgres_data:
