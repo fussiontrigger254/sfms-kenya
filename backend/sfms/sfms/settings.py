@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'crops',
     'notifications',
     'livestock',
+    'community',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
