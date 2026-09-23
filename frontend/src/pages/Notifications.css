@@ -1,0 +1,76 @@
+/* frontend/src/pages/Notifications.css */
+.notifications-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.notifications-container h1 {
+  color: #2E7D32;
+  margin-bottom: 1.5rem;
+}
+
+.notifications-error {
+  color: #c0392b;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notification-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-left: 4px solid #2E7D32;
+  border-radius: 8px;
+}
+
+.notification-card.status-failed {
+  border-left-color: #c0392b;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.notification-type {
+  font-weight: 600;
+  color: #2E7D32;
+}
+
+.notification-status {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.status-badge-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge-sent {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge-failed {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.notification-message {
+  margin: 0.25rem 0;
+}
+
+.notification-due {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}

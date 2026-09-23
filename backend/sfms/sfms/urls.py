@@ -7,7 +7,7 @@ urlpatterns = [
     path('api/', include('crops.urls')),
     path('api/', include('livestock.urls')),       
     path('api-auth/', include('rest_framework.urls')),
-
+    path('api/notifications/', include('notifications.urls')), 
     path('api/community/', include('community.urls')),
 ]
 

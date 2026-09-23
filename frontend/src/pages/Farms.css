@@ -1,0 +1,74 @@
+/* frontend/src/pages/Farms.css */
+.farms-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.farms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.farms-header h1 {
+  color: #2E7D32;
+}
+
+.farms-header button {
+  padding: 0.5rem 1rem;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.farm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.farm-form input,
+.farm-form select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.farm-form button {
+  padding: 0.6rem;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.farms-error {
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.farms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.farm-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.farm-card h3 {
+  margin: 0 0 0.25rem 0;
+  color: #2E7D32;
+}

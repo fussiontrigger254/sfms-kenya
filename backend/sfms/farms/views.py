@@ -1,13 +1,23 @@
-from rest_framework import generics
+# farms/views.py
+from rest_framework import generics, permissions
 from .models import Farm
 from .serializers import FarmSerializer
 
 
 class FarmListCreateView(generics.ListCreateAPIView):
-    queryset = Farm.objects.all().order_by('-created_at')
     serializer_class = FarmSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Farm.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class FarmDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Farm.objects.all()
     serializer_class = FarmSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Farm.objects.filter(user=self.request.user)
