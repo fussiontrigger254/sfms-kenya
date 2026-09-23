@@ -1,0 +1,106 @@
+/* frontend/src/pages/AnimalDetail.css */
+.animal-detail-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.back-link {
+  color: #2E7D32;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.animal-detail-container h1 {
+  color: #2E7D32;
+  margin-bottom: 0.25rem;
+}
+
+.animal-detail-error {
+  color: #c0392b;
+}
+
+.animal-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.animal-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.animal-section-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.animal-section-header button {
+  padding: 0.4rem 0.8rem;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.animal-log-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.animal-log-form input,
+.animal-log-form select,
+.animal-log-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.animal-form-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: -0.3rem;
+}
+
+.animal-log-form button {
+  padding: 0.5rem;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.animal-empty {
+  color: #999;
+  font-style: italic;
+}
+
+.animal-log-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.animal-log-due {
+  color: #c0392b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0.25rem 0 0 0;
+}
+
+.animal-log-notes {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0 0;
+}

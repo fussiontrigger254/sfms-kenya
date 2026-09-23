@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'notifications',
     'livestock',
     'community',
+    'financials',
     'django_filters',
 ]
 
