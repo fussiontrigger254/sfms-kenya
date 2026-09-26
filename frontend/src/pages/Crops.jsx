@@ -1,10 +1,12 @@
 // frontend/src/pages/Crops.jsx
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
 import './Crops.css'
 
 export default function Crops() {
+  const { t } = useTranslation()
   const [crops, setCrops] = useState([])
   const [farms, setFarms] = useState([])
   const [loading, setLoading] = useState(true)
@@ -31,7 +33,7 @@ export default function Crops() {
       setCrops(cropsRes.data)
       setFarms(farmsRes.data)
     } catch (err) {
-      setError('Could not load crops.')
+      setError(t('crops.error'))
     } finally {
       setLoading(false)
     }
@@ -62,30 +64,30 @@ export default function Crops() {
       setShowForm(false)
       fetchData()
     } catch (err) {
-      setError('Could not create crop. Check the fields and try again.')
+      setError(t('crops.error'))
     }
   }
 
   const sprayLabel = (crop) => {
-    if (crop.days_to_next_spray === null) return 'No spray scheduled'
-    if (crop.days_to_next_spray < 0) return `Overdue by ${-crop.days_to_next_spray}d`
-    if (crop.days_to_next_spray === 0) return 'Spray due today'
-    return `Spray in ${crop.days_to_next_spray}d`
+    if (crop.days_to_next_spray === null) return t('crops.noSpray')
+    if (crop.days_to_next_spray < 0) return t('crops.overdue', { days: -crop.days_to_next_spray })
+    if (crop.days_to_next_spray === 0) return t('crops.dueToday')
+    return t('crops.dueIn', { days: crop.days_to_next_spray })
   }
 
   return (
     <div className="crops-container">
       <div className="crops-header">
-        <h1>My Crops</h1>
+        <h1>{t('crops.title')}</h1>
         <button onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel' : '+ Add Crop'}
+          {showForm ? t('crops.cancel') : t('crops.addCrop')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="crop-form">
           <select name="farm" value={formData.farm} onChange={handleChange} required>
-            <option value="">Select farm...</option>
+            <option value="">{t('crops.selectFarm')}</option>
             {farms.map((f) => (
               <option key={f.id} value={f.id}>{f.farm_name}</option>
             ))}
@@ -93,7 +95,7 @@ export default function Crops() {
           <input
             type="text"
             name="crop_name"
-            placeholder="Crop name (e.g. Maize)"
+            placeholder={t('crops.cropName')}
             value={formData.crop_name}
             onChange={handleChange}
             required
@@ -101,11 +103,11 @@ export default function Crops() {
           <input
             type="text"
             name="variety"
-            placeholder="Variety (optional, e.g. H614D)"
+            placeholder={t('crops.variety')}
             value={formData.variety}
             onChange={handleChange}
           />
-          <label className="crop-form-label">Planting date</label>
+          <label className="crop-form-label">{t('crops.plantingDate')}</label>
           <input
             type="date"
             name="planting_date"
@@ -117,17 +119,17 @@ export default function Crops() {
             type="number"
             step="0.1"
             name="plot_size"
-            placeholder="Plot size (acres)"
+            placeholder={t('crops.plotSize')}
             value={formData.plot_size}
             onChange={handleChange}
             required
           />
           <select name="season" value={formData.season} onChange={handleChange}>
-            <option value="long_rains">Long Rains (Mar–Jun)</option>
-            <option value="short_rains">Short Rains (Oct–Dec)</option>
-            <option value="irrigation">Irrigation / Dry Season</option>
+            <option value="long_rains">{t('crops.seasonLong')}</option>
+            <option value="short_rains">{t('crops.seasonShort')}</option>
+            <option value="irrigation">{t('crops.seasonIrrigation')}</option>
           </select>
-          <label className="crop-form-label">Spray interval (days)</label>
+          <label className="crop-form-label">{t('crops.sprayInterval')}</label>
           <input
             type="number"
             name="spray_interval_days"
@@ -135,21 +137,21 @@ export default function Crops() {
             onChange={handleChange}
           />
           {error && <p className="crops-error">{error}</p>}
-          <button type="submit">Save Crop</button>
+          <button type="submit">{t('crops.save')}</button>
         </form>
       )}
 
       {loading ? (
-        <p>Loading...</p>
+        <p>{t('crops.loading')}</p>
       ) : crops.length === 0 ? (
-        <p>No crops yet. Add your first one above.</p>
+        <p>{t('crops.empty')}</p>
       ) : (
         <div className="crops-list">
           {crops.map((crop) => (
             <Link to={`/crops/${crop.id}`} key={crop.id} className="crop-card">
               <h3>{crop.crop_name}</h3>
               {crop.variety && <p className="crop-variety">{crop.variety}</p>}
-              <p>{crop.plot_size} acres · {crop.status}</p>
+              <p>{crop.plot_size} {t('farms.acres')} · {crop.status}</p>
               <p className="crop-spray">{sprayLabel(crop)}</p>
             </Link>
           ))}

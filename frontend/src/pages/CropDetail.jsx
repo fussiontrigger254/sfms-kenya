@@ -1,11 +1,13 @@
 // frontend/src/pages/CropDetail.jsx
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
 import './CropDetail.css'
 
 export default function CropDetail() {
   const { id } = useParams()
+  const { t } = useTranslation()
   const [crop, setCrop] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -74,19 +76,19 @@ export default function CropDetail() {
     }
   }
 
-  if (loading) return <p className="crop-detail-container">Loading...</p>
-  if (!crop) return <p className="crop-detail-container">Crop not found.</p>
+  if (loading) return <p className="crop-detail-container">{t('cropDetail.loading')}</p>
+  if (!crop) return <p className="crop-detail-container">{t('cropDetail.notFound')}</p>
 
   return (
     <div className="crop-detail-container">
-      <Link to="/crops" className="back-link">← Back to Crops</Link>
+      <Link to="/crops" className="back-link">{t('cropDetail.back')}</Link>
       <h1>{crop.crop_name}</h1>
       {crop.variety && <p className="crop-variety">{crop.variety}</p>}
-      <p>Status: {crop.status} · {crop.plot_size} acres</p>
-      <p>Planted: {crop.planting_date}</p>
+      <p>{t('cropDetail.status')}: {crop.status} · {crop.plot_size} {t('farms.acres')}</p>
+      <p>{t('cropDetail.planted')}: {crop.planting_date}</p>
       {crop.next_spray_date && (
         <p className="crop-next-spray">
-          Next spray: {crop.next_spray_date}
+          {t('cropDetail.nextSpray')}: {crop.next_spray_date}
           {crop.days_to_next_spray !== null && ` (${crop.days_to_next_spray}d)`}
         </p>
       )}
@@ -95,9 +97,9 @@ export default function CropDetail() {
 
       <div className="crop-section">
         <div className="crop-section-header">
-          <h2>Spray Logs</h2>
+          <h2>{t('cropDetail.sprayLogs')}</h2>
           <button onClick={() => setShowSprayForm(!showSprayForm)}>
-            {showSprayForm ? 'Cancel' : '+ Log Spray'}
+            {showSprayForm ? t('cropDetail.cancel') : t('cropDetail.logSpray')}
           </button>
         </div>
 
@@ -111,21 +113,21 @@ export default function CropDetail() {
             />
             <input
               type="text"
-              placeholder="Product used (optional)"
+              placeholder={t('cropDetail.productUsed')}
               value={sprayData.product_used}
               onChange={(e) => setSprayData({ ...sprayData, product_used: e.target.value })}
             />
             <textarea
-              placeholder="Notes (optional)"
+              placeholder={t('cropDetail.notes')}
               value={sprayData.notes}
               onChange={(e) => setSprayData({ ...sprayData, notes: e.target.value })}
             />
-            <button type="submit">Save Spray Log</button>
+            <button type="submit">{t('cropDetail.saveSpray')}</button>
           </form>
         )}
 
         {crop.spray_logs.length === 0 ? (
-          <p className="crop-empty">No sprays logged yet.</p>
+          <p className="crop-empty">{t('cropDetail.noSprays')}</p>
         ) : (
           crop.spray_logs.map((s) => (
             <div key={s.id} className="crop-log-item">
@@ -138,9 +140,9 @@ export default function CropDetail() {
 
       <div className="crop-section">
         <div className="crop-section-header">
-          <h2>Harvest Logs</h2>
+          <h2>{t('cropDetail.harvestLogs')}</h2>
           <button onClick={() => setShowHarvestForm(!showHarvestForm)}>
-            {showHarvestForm ? 'Cancel' : '+ Log Harvest'}
+            {showHarvestForm ? t('cropDetail.cancel') : t('cropDetail.logHarvest')}
           </button>
         </div>
 
@@ -155,7 +157,7 @@ export default function CropDetail() {
             <input
               type="number"
               step="0.1"
-              placeholder="Expected yield (kg)"
+              placeholder={t('cropDetail.expectedYield')}
               value={harvestData.expected_yield_kg}
               onChange={(e) => setHarvestData({ ...harvestData, expected_yield_kg: e.target.value })}
               required
@@ -163,7 +165,7 @@ export default function CropDetail() {
             <input
               type="number"
               step="0.1"
-              placeholder="Actual yield (kg)"
+              placeholder={t('cropDetail.actualYield')}
               value={harvestData.actual_yield_kg}
               onChange={(e) => setHarvestData({ ...harvestData, actual_yield_kg: e.target.value })}
               required
@@ -172,28 +174,28 @@ export default function CropDetail() {
               value={harvestData.quality_grade}
               onChange={(e) => setHarvestData({ ...harvestData, quality_grade: e.target.value })}
             >
-              <option value="A">Grade A</option>
-              <option value="B">Grade B</option>
-              <option value="C">Grade C</option>
-              <option value="custom">Custom</option>
+              <option value="A">{t('cropDetail.gradeA')}</option>
+              <option value="B">{t('cropDetail.gradeB')}</option>
+              <option value="C">{t('cropDetail.gradeC')}</option>
+              <option value="custom">{t('cropDetail.gradeCustom')}</option>
             </select>
             <textarea
-              placeholder="Notes (optional)"
+              placeholder={t('cropDetail.notes')}
               value={harvestData.notes}
               onChange={(e) => setHarvestData({ ...harvestData, notes: e.target.value })}
             />
-            <button type="submit">Save Harvest Log</button>
+            <button type="submit">{t('cropDetail.saveHarvest')}</button>
           </form>
         )}
 
         {crop.harvest_logs.length === 0 ? (
-          <p className="crop-empty">No harvests logged yet.</p>
+          <p className="crop-empty">{t('cropDetail.noHarvests')}</p>
         ) : (
           crop.harvest_logs.map((h) => (
             <div key={h.id} className="crop-log-item">
               <strong>{h.harvest_date}</strong> · {h.actual_yield_kg}kg
-              {' '}({h.yield_variance_kg >= 0 ? '+' : ''}{h.yield_variance_kg}kg vs expected)
-              · Grade {h.quality_grade}
+              {' '}({h.yield_variance_kg >= 0 ? '+' : ''}{h.yield_variance_kg}kg {t('cropDetail.vsExpected')})
+              · {t('cropDetail.grade')} {h.quality_grade}
               {h.notes && <p className="crop-log-notes">{h.notes}</p>}
             </div>
           ))

@@ -40,3 +40,33 @@ class SoilLog(models.Model):
 
     def __str__(self):
         return f"Soil test {self.test_date} — {self.farm.farm_name}"
+
+
+class Task(models.Model):
+    FREQUENCY_CHOICES = [
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+        ('one_time', 'One-time'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('skipped', 'Skipped'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name='tasks')
+    title = models.CharField(max_length=300, help_text='e.g. Water cattle, Check spray tank')
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
+    due_date = models.DateField(null=True, blank=True, help_text='For one-time tasks')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['status', 'due_date']
+
+    def __str__(self):
+        return f"{self.title} ({self.farm.farm_name})"

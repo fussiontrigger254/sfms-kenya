@@ -1,20 +1,22 @@
 // frontend/src/pages/Notifications.jsx
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
 import './Notifications.css'
 
-const TYPE_LABELS = {
-  spray_reminder: 'Spray Reminder',
-  health_due: 'Health Due',
-  weather_alert: 'Weather Alert',
-  harvest_due: 'Harvest Due',
-  task_due: 'Task Due',
-}
-
 export default function Notifications() {
+  const { t } = useTranslation()
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const typeLabels = {
+    spray_reminder: t('notifications.sprayReminder'),
+    health_due: t('notifications.healthDue'),
+    weather_alert: t('notifications.weatherAlert'),
+    harvest_due: t('notifications.harvestDue'),
+    task_due: t('notifications.taskDue'),
+  }
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -22,7 +24,7 @@ export default function Notifications() {
         const res = await apiClient.get('notifications/')
         setNotifications(res.data)
       } catch (err) {
-        setError('Could not load notifications.')
+        setError(t('notifications.error'))
       } finally {
         setLoading(false)
       }
@@ -32,13 +34,13 @@ export default function Notifications() {
 
   return (
     <div className="notifications-container">
-      <h1>Notifications</h1>
+      <h1>{t('notifications.title')}</h1>
 
-      {loading && <p>Loading...</p>}
+      {loading && <p>{t('notifications.loading')}</p>}
       {error && <p className="notifications-error">{error}</p>}
 
       {!loading && !error && notifications.length === 0 && (
-        <p>No notifications yet.</p>
+        <p>{t('notifications.empty')}</p>
       )}
 
       <div className="notifications-list">
@@ -46,14 +48,14 @@ export default function Notifications() {
           <div key={n.id} className={`notification-card status-${n.status}`}>
             <div className="notification-header">
               <span className="notification-type">
-                {TYPE_LABELS[n.type] || n.type}
+                {typeLabels[n.type] || n.type}
               </span>
               <span className={`notification-status status-badge-${n.status}`}>
                 {n.status}
               </span>
             </div>
             <p className="notification-message">{n.message}</p>
-            <p className="notification-due">Due: {n.due_date}</p>
+            <p className="notification-due">{t('notifications.due')}: {n.due_date}</p>
           </div>
         ))}
       </div>

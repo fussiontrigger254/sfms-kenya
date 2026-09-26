@@ -38,3 +38,20 @@
   color: #c0392b;
   font-size: 0.9rem;
 }
+.lang-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lang-toggle button {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #2E7D32;
+  background: white;
+  color: #2E7D32;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}

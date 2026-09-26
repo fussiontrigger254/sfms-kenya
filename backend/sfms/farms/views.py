@@ -1,7 +1,7 @@
 # backend/sfms/farms/views.py
 from rest_framework import generics, permissions
-from .models import Farm, SoilLog
-from .serializers import FarmSerializer, SoilLogSerializer
+from .models import Farm, SoilLog, Task
+from .serializers import FarmSerializer, SoilLogSerializer, TaskSerializer
 
 
 class FarmListCreateView(generics.ListCreateAPIView):
@@ -37,3 +37,19 @@ class SoilLogDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return SoilLog.objects.filter(farm__user=self.request.user)
+
+
+class TaskListCreateView(generics.ListCreateAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(farm__user=self.request.user)
+
+
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(farm__user=self.request.user)

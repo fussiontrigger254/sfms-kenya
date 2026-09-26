@@ -1,0 +1,118 @@
+/* frontend/src/pages/Tasks.css */
+.tasks-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tasks-header h1 {
+  color: #2E7D32;
+}
+
+.tasks-header button {
+  padding: 0.5rem 1rem;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.task-form input,
+.task-form select,
+.task-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.task-form-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: -0.3rem;
+}
+
+.task-form button {
+  padding: 0.6rem;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tasks-error {
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.task-item input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 18px;
+  height: 18px;
+  accent-color: #2E7D32;
+  cursor: pointer;
+}
+
+.task-item-content {
+  flex: 1;
+}
+
+.task-title {
+  margin: 0;
+  font-weight: 500;
+}
+
+.task-meta {
+  margin: 0.15rem 0 0 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.task-item-done .task-title {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.task-completed-section {
+  margin-top: 1.5rem;
+}
+
+.task-completed-section h2 {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}

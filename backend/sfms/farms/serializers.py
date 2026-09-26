@@ -1,6 +1,6 @@
 # backend/sfms/farms/serializers.py
 from rest_framework import serializers
-from .models import Farm, SoilLog
+from .models import Farm, SoilLog, Task
 
 
 class FarmSerializer(serializers.ModelSerializer):
@@ -29,6 +29,22 @@ class SoilLogSerializer(serializers.ModelSerializer):
             'ph_level',
             'soil_type',
             'last_fertilised',
+            'notes',
+            'created_at',
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = [
+            'id',
+            'farm',
+            'title',
+            'frequency',
+            'due_date',
+            'status',
             'notes',
             'created_at',
         ]

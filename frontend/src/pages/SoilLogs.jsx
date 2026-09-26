@@ -1,9 +1,11 @@
 // frontend/src/pages/SoilLogs.jsx
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
 import './SoilLogs.css'
 
 export default function SoilLogs() {
+  const { t } = useTranslation()
   const [logs, setLogs] = useState([])
   const [farms, setFarms] = useState([])
   const [loading, setLoading] = useState(true)
@@ -29,7 +31,7 @@ export default function SoilLogs() {
       setLogs(logsRes.data)
       setFarms(farmsRes.data)
     } catch (err) {
-      setError('Could not load soil logs.')
+      setError(t('soilLogs.error'))
     } finally {
       setLoading(false)
     }
@@ -59,7 +61,7 @@ export default function SoilLogs() {
       setShowForm(false)
       fetchData()
     } catch (err) {
-      setError('Could not save soil log. Check the fields and try again.')
+      setError(t('soilLogs.error'))
     }
   }
 
@@ -68,21 +70,21 @@ export default function SoilLogs() {
   return (
     <div className="soil-container">
       <div className="soil-header">
-        <h1>Soil Logs</h1>
+        <h1>{t('soilLogs.title')}</h1>
         <button onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel' : '+ Add Soil Test'}
+          {showForm ? t('soilLogs.cancel') : t('soilLogs.addTest')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="soil-form">
           <select name="farm" value={formData.farm} onChange={handleChange} required>
-            <option value="">Select farm...</option>
+            <option value="">{t('soilLogs.selectFarm')}</option>
             {farms.map((f) => (
               <option key={f.id} value={f.id}>{f.farm_name}</option>
             ))}
           </select>
-          <label className="soil-form-label">Test date</label>
+          <label className="soil-form-label">{t('soilLogs.testDate')}</label>
           <input
             type="date"
             name="test_date"
@@ -94,18 +96,18 @@ export default function SoilLogs() {
             type="number"
             step="0.01"
             name="ph_level"
-            placeholder="pH level (optional, e.g. 6.5)"
+            placeholder={t('soilLogs.phLevel')}
             value={formData.ph_level}
             onChange={handleChange}
           />
           <input
             type="text"
             name="soil_type"
-            placeholder="Soil type (optional, e.g. Clay, Loam, Sandy)"
+            placeholder={t('soilLogs.soilType')}
             value={formData.soil_type}
             onChange={handleChange}
           />
-          <label className="soil-form-label">Last fertilised (optional)</label>
+          <label className="soil-form-label">{t('soilLogs.lastFertilised')}</label>
           <input
             type="date"
             name="last_fertilised"
@@ -114,28 +116,28 @@ export default function SoilLogs() {
           />
           <textarea
             name="notes"
-            placeholder="Notes (optional)"
+            placeholder={t('soilLogs.notes')}
             value={formData.notes}
             onChange={handleChange}
           />
           {error && <p className="soil-error">{error}</p>}
-          <button type="submit">Save Soil Log</button>
+          <button type="submit">{t('soilLogs.save')}</button>
         </form>
       )}
 
       {loading ? (
-        <p>Loading...</p>
+        <p>{t('soilLogs.loading')}</p>
       ) : logs.length === 0 ? (
-        <p>No soil logs yet. Add your first test above.</p>
+        <p>{t('soilLogs.empty')}</p>
       ) : (
         <div className="soil-list">
           {logs.map((log) => (
             <div key={log.id} className="soil-card">
               <h3>{farmName(log.farm)}</h3>
-              <p>Tested: {log.test_date}</p>
+              <p>{t('soilLogs.tested')}: {log.test_date}</p>
               {log.ph_level && <p>pH: {log.ph_level}</p>}
-              {log.soil_type && <p>Type: {log.soil_type}</p>}
-              {log.last_fertilised && <p>Last fertilised: {log.last_fertilised}</p>}
+              {log.soil_type && <p>{t('soilLogs.type')}: {log.soil_type}</p>}
+              {log.last_fertilised && <p>{t('soilLogs.lastFertilised')}: {log.last_fertilised}</p>}
               {log.notes && <p className="soil-notes">{log.notes}</p>}
             </div>
           ))}

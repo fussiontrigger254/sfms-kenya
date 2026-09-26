@@ -1,9 +1,11 @@
 // frontend/src/pages/Farms.jsx
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
 import './Farms.css'
 
 export default function Farms() {
+  const { t } = useTranslation()
   const [farms, setFarms] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -22,7 +24,7 @@ export default function Farms() {
       const res = await apiClient.get('farms/')
       setFarms(res.data)
     } catch (err) {
-      setError('Could not load farms.')
+      setError(t('farms.error'))
     } finally {
       setLoading(false)
     }
@@ -45,16 +47,16 @@ export default function Farms() {
       setShowForm(false)
       fetchFarms()
     } catch (err) {
-      setError('Could not create farm. Check the fields and try again.')
+      setError(t('farms.error'))
     }
   }
 
   return (
     <div className="farms-container">
       <div className="farms-header">
-        <h1>My Farms</h1>
+        <h1>{t('farms.title')}</h1>
         <button onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel' : '+ Add Farm'}
+          {showForm ? t('farms.cancel') : t('farms.addFarm')}
         </button>
       </div>
 
@@ -63,7 +65,7 @@ export default function Farms() {
           <input
             type="text"
             name="farm_name"
-            placeholder="Farm name"
+            placeholder={t('farms.farmName')}
             value={formData.farm_name}
             onChange={handleChange}
             required
@@ -71,7 +73,7 @@ export default function Farms() {
           <input
             type="text"
             name="location"
-            placeholder="Location (e.g. Nakuru, Njoro)"
+            placeholder={t('farms.location')}
             value={formData.location}
             onChange={handleChange}
             required
@@ -80,32 +82,32 @@ export default function Farms() {
             type="number"
             step="0.1"
             name="farm_size"
-            placeholder="Size (acres)"
+            placeholder={t('farms.size')}
             value={formData.farm_size}
             onChange={handleChange}
             required
           />
           <select name="farm_type" value={formData.farm_type} onChange={handleChange}>
-            <option value="crop">Crop</option>
-            <option value="livestock">Livestock</option>
-            <option value="mixed">Mixed</option>
+            <option value="crop">{t('farms.typeCrop')}</option>
+            <option value="livestock">{t('farms.typeLivestock')}</option>
+            <option value="mixed">{t('farms.typeMixed')}</option>
           </select>
           {error && <p className="farms-error">{error}</p>}
-          <button type="submit">Save Farm</button>
+          <button type="submit">{t('farms.save')}</button>
         </form>
       )}
 
       {loading ? (
-        <p>Loading...</p>
+        <p>{t('farms.loading')}</p>
       ) : farms.length === 0 ? (
-        <p>No farms yet. Add your first one above.</p>
+        <p>{t('farms.empty')}</p>
       ) : (
         <div className="farms-list">
           {farms.map((farm) => (
             <div key={farm.id} className="farm-card">
               <h3>{farm.farm_name}</h3>
               <p>{farm.location}</p>
-              <p>{farm.farm_size} acres · {farm.farm_type}</p>
+              <p>{farm.farm_size} {t('farms.acres')} · {farm.farm_type}</p>
             </div>
           ))}
         </div>

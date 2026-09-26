@@ -9,33 +9,42 @@ import CropDetail from './pages/CropDetail'
 import Livestock from './pages/Livestock'
 import AnimalDetail from './pages/AnimalDetail'
 import SoilLogs from './pages/SoilLogs'
-import Community from './pages/Community'
+import Tasks from './pages/Tasks'
 import Financials from './pages/Financials'
+import Community from './pages/Community'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
+import { useTranslation } from 'react-i18next'
 
 function Home() {
   const { user, logout } = useAuth()
+  const { t, i18n } = useTranslation()
   return (
     <div style={{ padding: '2rem' }}>
-      <h1>SFMS Kenya Dashboard</h1>
-      <p>Logged in as: {user?.email}</p>
+      <div className="lang-toggle" style={{ position: 'static', marginBottom: '1rem' }}>
+        <button onClick={() => i18n.changeLanguage('en')}>EN</button>
+        <button onClick={() => i18n.changeLanguage('sw')}>SW</button>
+      </div>
+      <h1>{t('dashboard.title')}</h1>
+      <p>{t('nav.loggedInAs')} {user?.email}</p>
       <p>
-        <Link to="/farms">My Farms</Link>
+        <Link to="/farms">{t('nav.farms')}</Link>
         {' · '}
-        <Link to="/crops">Crops</Link>
+        <Link to="/crops">{t('nav.crops')}</Link>
         {' · '}
-        <Link to="/livestock">Livestock</Link>
+        <Link to="/livestock">{t('nav.livestock')}</Link>
         {' · '}
-        <Link to="/soil-logs">Soil Logs</Link>
+        <Link to="/soil-logs">{t('nav.soilLogs')}</Link>
         {' · '}
-        <Link to="/financials">Financials</Link>
+        <Link to="/tasks">{t('nav.tasks')}</Link>
         {' · '}
-        <Link to="/notifications">Notifications</Link>
+        <Link to="/financials">{t('nav.financials')}</Link>
         {' · '}
-        <Link to="/community">Community</Link>
+        <Link to="/community">{t('nav.community')}</Link>
+        {' · '}
+        <Link to="/notifications">{t('nav.notifications')}</Link>
       </p>
-      <button onClick={logout}>Log Out</button>
+      <button onClick={logout}>{t('nav.logout')}</button>
     </div>
   )
 }
@@ -108,12 +117,19 @@ export default function App() {
             <SoilLogs />
           </ProtectedRoute>
         }
-        
+      />
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <Tasks />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/financials"
         element={
-         <ProtectedRoute>
+          <ProtectedRoute>
             <Financials />
           </ProtectedRoute>
         }

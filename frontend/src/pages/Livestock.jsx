@@ -1,6 +1,7 @@
 // frontend/src/pages/Livestock.jsx
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
 import './Livestock.css'
 
@@ -15,6 +16,7 @@ const ANIMAL_TYPES = [
 ]
 
 export default function Livestock() {
+  const { t } = useTranslation()
   const [animals, setAnimals] = useState([])
   const [farms, setFarms] = useState([])
   const [loading, setLoading] = useState(true)
@@ -41,7 +43,7 @@ export default function Livestock() {
       setAnimals(animalsRes.data)
       setFarms(farmsRes.data)
     } catch (err) {
-      setError('Could not load animals.')
+      setError(t('livestock.error'))
     } finally {
       setLoading(false)
     }
@@ -72,7 +74,7 @@ export default function Livestock() {
       setShowForm(false)
       fetchData()
     } catch (err) {
-      setError('Could not add animal. Check the fields and try again.')
+      setError(t('livestock.error'))
     }
   }
 
@@ -81,24 +83,24 @@ export default function Livestock() {
       .filter((r) => r.days_to_next_due !== null)
       .sort((a, b) => a.days_to_next_due - b.days_to_next_due)[0]
     if (!upcoming) return null
-    if (upcoming.days_to_next_due < 0) return `${-upcoming.days_to_next_due}d overdue`
-    if (upcoming.days_to_next_due === 0) return 'Due today'
-    return `Due in ${upcoming.days_to_next_due}d`
+    if (upcoming.days_to_next_due < 0) return t('livestock.overdue', { days: -upcoming.days_to_next_due })
+    if (upcoming.days_to_next_due === 0) return t('livestock.dueToday')
+    return t('livestock.dueIn', { days: upcoming.days_to_next_due })
   }
 
   return (
     <div className="livestock-container">
       <div className="livestock-header">
-        <h1>My Livestock</h1>
+        <h1>{t('livestock.title')}</h1>
         <button onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel' : '+ Add Animal'}
+          {showForm ? t('livestock.cancel') : t('livestock.addAnimal')}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="animal-form">
           <select name="farm" value={formData.farm} onChange={handleChange} required>
-            <option value="">Select farm...</option>
+            <option value="">{t('livestock.selectFarm')}</option>
             {farms.map((f) => (
               <option key={f.id} value={f.id}>{f.farm_name}</option>
             ))}
@@ -106,7 +108,7 @@ export default function Livestock() {
           <input
             type="text"
             name="animal_tag"
-            placeholder="Tag (e.g. COW-001)"
+            placeholder={t('livestock.tag')}
             value={formData.animal_tag}
             onChange={handleChange}
             required
@@ -119,11 +121,11 @@ export default function Livestock() {
           <input
             type="text"
             name="breed"
-            placeholder="Breed (optional, e.g. Friesian)"
+            placeholder={t('livestock.breed')}
             value={formData.breed}
             onChange={handleChange}
           />
-          <label className="animal-form-label">Birth date (optional)</label>
+          <label className="animal-form-label">{t('livestock.birthDate')}</label>
           <input
             type="date"
             name="birth_date"
@@ -131,26 +133,26 @@ export default function Livestock() {
             onChange={handleChange}
           />
           <select name="gender" value={formData.gender} onChange={handleChange}>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
+            <option value="female">{t('livestock.genderFemale')}</option>
+            <option value="male">{t('livestock.genderMale')}</option>
           </select>
           <input
             type="number"
             step="0.1"
             name="weight_kg"
-            placeholder="Weight (kg, optional)"
+            placeholder={t('livestock.weight')}
             value={formData.weight_kg}
             onChange={handleChange}
           />
           {error && <p className="livestock-error">{error}</p>}
-          <button type="submit">Save Animal</button>
+          <button type="submit">{t('livestock.save')}</button>
         </form>
       )}
 
       {loading ? (
-        <p>Loading...</p>
+        <p>{t('livestock.loading')}</p>
       ) : animals.length === 0 ? (
-        <p>No animals yet. Add your first one above.</p>
+        <p>{t('livestock.empty')}</p>
       ) : (
         <div className="livestock-list">
           {animals.map((animal) => (
@@ -160,7 +162,7 @@ export default function Livestock() {
                 {ANIMAL_TYPES.find(([v]) => v === animal.animal_type)?.[1] || animal.animal_type}
                 {animal.breed && ` · ${animal.breed}`}
               </p>
-              <p>{animal.age_years !== null ? `${animal.age_years} yrs` : 'Age unknown'} · {animal.status}</p>
+              <p>{animal.age_years !== null ? `${animal.age_years} ${t('livestock.yrs')}` : t('livestock.ageUnknown')} · {animal.status}</p>
               {dueLabel(animal) && <p className="animal-due">{dueLabel(animal)}</p>}
             </Link>
           ))}

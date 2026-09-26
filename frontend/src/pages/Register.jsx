@@ -1,6 +1,7 @@
 // frontend/src/pages/Register.jsx
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import './Register.css'
 
@@ -11,6 +12,7 @@ export default function Register() {
   const [error, setError] = useState('')
   const { register, user } = useAuth()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   if (user) {
     navigate('/', { replace: true })
@@ -22,11 +24,11 @@ export default function Register() {
     setError('')
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError(t('register.errorMismatch'))
       return
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+      setError(t('register.errorShort'))
       return
     }
 
@@ -35,9 +37,9 @@ export default function Register() {
       navigate('/', { replace: true })
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
-        setError('An account with this email already exists.')
+        setError(t('register.errorInUse'))
       } else {
-        setError('Could not create account. Please try again.')
+        setError(t('register.errorGeneric'))
       }
     }
   }
@@ -45,33 +47,33 @@ export default function Register() {
   return (
     <div className="register-container">
       <form onSubmit={handleSubmit} className="register-form">
-        <h1>SFMS Kenya</h1>
-        <p className="register-subtitle">Create your account</p>
+        <h1>{t('register.title')}</h1>
+        <p className="register-subtitle">{t('register.subtitle')}</p>
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t('register.email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t('register.password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <input
           type="password"
-          placeholder="Confirm Password"
+          placeholder={t('register.confirmPassword')}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
         {error && <p className="register-error">{error}</p>}
-        <button type="submit">Register</button>
+        <button type="submit">{t('register.submit')}</button>
         <p className="register-link">
-          Already have an account? <Link to="/login">Log In</Link>
+          {t('register.haveAccount')} <Link to="/login">{t('register.login')}</Link>
         </p>
       </form>
     </div>

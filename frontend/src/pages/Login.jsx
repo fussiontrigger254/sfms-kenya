@@ -1,6 +1,7 @@
 // frontend/src/pages/Login.jsx
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import './Login.css'
 
@@ -10,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const { login, user } = useAuth()
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
 
   if (user) {
     navigate('/', { replace: true })
@@ -23,32 +25,36 @@ export default function Login() {
       await login(email, password)
       navigate('/', { replace: true })
     } catch (err) {
-      setError('Invalid email or password.')
+      setError(t('login.error'))
     }
   }
 
   return (
     <div className="login-container">
+      <div className="lang-toggle">
+        <button onClick={() => i18n.changeLanguage('en')}>EN</button>
+        <button onClick={() => i18n.changeLanguage('sw')}>SW</button>
+      </div>
       <form onSubmit={handleSubmit} className="login-form">
-        <h1>SFMS Kenya</h1>
+        <h1>{t('login.title')}</h1>
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t('login.email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t('login.password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         {error && <p className="login-error">{error}</p>}
-        <button type="submit">Log In</button>
-                <p className="login-link">
-          No account? <a href="/register">Register</a>
+        <button type="submit">{t('login.submit')}</button>
+        <p className="login-link">
+          {t('login.noAccount')} <Link to="/register">{t('login.register')}</Link>
         </p>
       </form>
     </div>
