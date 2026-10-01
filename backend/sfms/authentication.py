@@ -24,6 +24,22 @@ class FirebaseAuthentication(BaseAuthentication):
         except Exception:
             raise AuthenticationFailed("Invalid Firebase token")
 
-        user, created = User.objects.get_or_create(username=uid)
+        name = (decoded.get("name") or "").strip()
+        email = decoded.get("email") or ""
+        first, _, last = name.partition(" ")
 
-        return (user, None)
+        user, created = User.objects.get_or_create(
+            username=uid,
+            defaults={"email": email, "first_name": first[:150], "last_name": last[:150]},
+        )
+
+        # Backfill existing users who were created with only a UID
+        changed = False
+        if email and not user.email:
+            user.email, changed = email, True
+        if first and not user.first_name:
+            user.first_name, user.last_name, changed = first[:150], last[:150], True
+        if changed:
+            user.save(update_fields=["email", "first_name", "last_name"])
+
+        return user, None

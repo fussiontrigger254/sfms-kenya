@@ -2,6 +2,12 @@ from datetime import timedelta
 from .models import Notification
 
 
+def greeting(user):
+    """'Ndugu Grace' if we know the name, plain 'Ndugu' otherwise. Never the Firebase UID."""
+    first = (user.first_name or "").strip()
+    return f"Ndugu {first}" if first else "Ndugu"
+
+
 class NotificationService:
 
     @staticmethod
@@ -19,7 +25,7 @@ class NotificationService:
         notification = Notification.objects.create(
             user    = farmer,
             message = (
-                f"Ndugu {farmer.get_full_name() or farmer.username}, "
+                f"{greeting(farmer)}, "
                 f"{crop.crop_name} spray due on "
                 f"{crop.next_spray_date.strftime('%a %d %b')}. "
                 f"Check weather before spraying."
@@ -51,7 +57,7 @@ class NotificationService:
         notification = Notification.objects.create(
             user    = farmer,
             message = (
-                f"Ndugu {farmer.get_full_name() or farmer.username}, "
+                f"{greeting(farmer)}, "
                 f"{animal.animal_tag} ({animal.breed or animal.animal_type}) "
                 f"{health_record.record_type} due on "
                 f"{health_record.next_due_date.strftime('%a %d %b')}. "
