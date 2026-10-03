@@ -1,39 +1,46 @@
 from datetime import timedelta
+import re
+
 from .models import Notification
 
 
+FIREBASE_UID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{20,}$")
+
+
 def greeting(user):
-    """'Ndugu Grace' if we know the name, plain 'Ndugu' otherwise. Never the Firebase UID."""
+    """Return a neutral greeting without exposing Firebase identifiers."""
     first = (user.first_name or "").strip()
-    return f"Ndugu {first}" if first else "Ndugu"
+
+    if not first or FIREBASE_UID_PATTERN.fullmatch(first):
+        return "Habari"
+
+    return f"Habari {first}"
 
 
 class NotificationService:
 
     @staticmethod
     def create_spray_reminder(crop) -> Notification:
-        """
-        Creates a pending SMS notification 2 days before next spray date.
-        Called by SprayService after every spray log.
-        """
+        """Create a pending reminder two days before the next spray date."""
         if not crop.next_spray_date:
             return None
 
-        farmer    = crop.farm.user
+        farm = crop.farm
+        farmer = farm.user
         remind_on = crop.next_spray_date - timedelta(days=2)
 
         notification = Notification.objects.create(
-            user    = farmer,
-            message = (
-                f"{greeting(farmer)}, "
-                f"{crop.crop_name} spray due on "
+            user=farmer,
+            message=(
+                f"{greeting(farmer)}, your farm \"{farm.farm_name}\"'s "
+                f"{crop.crop_name} spray is due on "
                 f"{crop.next_spray_date.strftime('%a %d %b')}. "
-                f"Check weather before spraying."
+                "Check weather before spraying."
             ),
-            type     = Notification.Type.SPRAY_REMINDER,
-            channel  = Notification.Channel.SMS,
-            due_date = remind_on,
-            status   = Notification.Status.PENDING,
+            type=Notification.Type.SPRAY_REMINDER,
+            channel=Notification.Channel.SMS,
+            due_date=remind_on,
+            status=Notification.Status.PENDING,
         )
 
         from notifications.tasks import send_notification_task
@@ -43,30 +50,28 @@ class NotificationService:
 
     @staticmethod
     def create_health_reminder(health_record) -> Notification:
-        """
-        Creates a pending SMS notification 3 days before next health due date.
-        Called by HealthService after every health record log.
-        """
+        """Create a pending reminder three days before health is due."""
         if not health_record.next_due_date:
             return None
 
-        animal    = health_record.animal
-        farmer    = animal.farm.user
+        animal = health_record.animal
+        farm = animal.farm
+        farmer = farm.user
         remind_on = health_record.next_due_date - timedelta(days=3)
 
         notification = Notification.objects.create(
-            user    = farmer,
-            message = (
-                f"{greeting(farmer)}, "
+            user=farmer,
+            message=(
+                f"{greeting(farmer)}, your farm \"{farm.farm_name}\"'s "
                 f"{animal.animal_tag} ({animal.breed or animal.animal_type}) "
-                f"{health_record.record_type} due on "
+                f"{health_record.record_type} is due on "
                 f"{health_record.next_due_date.strftime('%a %d %b')}. "
-                f"Contact your vet if needed."
+                "Contact your vet if needed."
             ),
-            type     = Notification.Type.HEALTH_DUE,
-            channel  = Notification.Channel.SMS,
-            due_date = remind_on,
-            status   = Notification.Status.PENDING,
+            type=Notification.Type.HEALTH_DUE,
+            channel=Notification.Channel.SMS,
+            due_date=remind_on,
+            status=Notification.Status.PENDING,
         )
 
         from notifications.tasks import send_notification_task

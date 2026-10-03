@@ -35,6 +35,11 @@
   border-radius: 8px;
 }
 
+.farm-form h2 {
+  margin: 0;
+  color: #2E7D32;
+}
+
 .farm-form input,
 .farm-form select {
   padding: 0.5rem;
@@ -51,10 +56,50 @@
   cursor: pointer;
 }
 
-.farms-error {
-  color: #c0392b;
-  font-size: 0.9rem;
+.location-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid #d8e8d8;
+  border-radius: 8px;
+  background: #f7fbf7;
 }
+
+.location-tools-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: #2e7d32;
+}
+
+.location-tools-header span,
+.location-tools small {
+  color: #667766;
+  font-size: 0.82rem;
+}
+
+.coordinate-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.location-button {
+  background: #1565c0 !important;
+}
+
+.farm-map-wrapper {
+  height: 260px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.farm-map {
+  height: 100%;
+  width: 100%;
+}
+
 
 .farms-list {
   display: flex;
@@ -66,9 +111,61 @@
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.farm-card-content {
+  min-width: 0;
 }
 
 .farm-card h3 {
   margin: 0 0 0.25rem 0;
   color: #2E7D32;
+}
+
+.farm-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.farm-actions button {
+  padding: 0.45rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.farm-edit-button {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.farm-delete-button {
+  background: #ffebee;
+  color: #c0392b;
+}
+
+.farm-edit-button:hover,
+.farm-delete-button:hover {
+  filter: brightness(0.95);
+}
+
+@media (max-width: 600px) {
+  .farm-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .farm-actions {
+    width: 100%;
+  }
+
+  .farm-actions button {
+    flex: 1;
+  }
 }

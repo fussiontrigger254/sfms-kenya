@@ -1,0 +1,73 @@
+/* frontend/src/pages/Weather.css */
+.weather-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.weather-container h1 {
+  color: #2E7D32;
+  margin-bottom: 1rem;
+}
+
+.weather-container select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.weather-error {
+  color: #c0392b;
+}
+
+.weather-alert {
+  background: #fff3cd;
+  border-left: 4px solid #856404;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  color: #856404;
+}
+
+.weather-forecast {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+}
+
+.weather-day {
+  min-width: 120px;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.weather-day-rain {
+  border-color: #3498db;
+  background: #eaf4fb;
+}
+
+.weather-date {
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.weather-temp {
+  margin: 0.25rem 0;
+}
+
+.weather-condition {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.weather-rain {
+  color: #3498db;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0.25rem 0 0 0;
+}

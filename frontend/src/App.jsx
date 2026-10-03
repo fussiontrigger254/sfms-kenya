@@ -12,6 +12,7 @@ import SoilLogs from './pages/SoilLogs'
 import Tasks from './pages/Tasks'
 import Financials from './pages/Financials'
 import Community from './pages/Community'
+import Weather from './pages/Weather'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
 import { useTranslation } from 'react-i18next'
@@ -42,7 +43,9 @@ function Home() {
         {' · '}
         <Link to="/community">{t('nav.community')}</Link>
         {' · '}
-        <Link to="/notifications">{t('nav.notifications')}</Link>
+       <Link to="/notifications">{t('nav.notifications')}</Link>
+        {' · '}
+        <Link to="/weather">{t('nav.weather')}</Link>
       </p>
       <button onClick={logout}>{t('nav.logout')}</button>
     </div>
@@ -131,6 +134,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Financials />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/weather"
+        element={
+          <ProtectedRoute>
+            <Weather />
           </ProtectedRoute>
         }
       />
