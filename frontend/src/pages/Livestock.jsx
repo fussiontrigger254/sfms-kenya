@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './Livestock.css'
 
 const ANIMAL_TYPES = [
@@ -37,8 +38,8 @@ export default function Livestock() {
     setLoading(true)
     try {
       const [animalsRes, farmsRes] = await Promise.all([
-        apiClient.get('animals/'),
-        apiClient.get('farms/'),
+        offlineApi.get('animals/'),
+        offlineApi.get('farms/'),
       ])
       setAnimals(animalsRes.data)
       setFarms(farmsRes.data)
@@ -61,7 +62,7 @@ export default function Livestock() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('animals/', formData)
+      await offlineApi.post('animals/', formData)
       setFormData({
         farm: '',
         animal_tag: '',
@@ -160,9 +161,9 @@ export default function Livestock() {
               <h3>{animal.animal_tag}</h3>
               <p>
                 {ANIMAL_TYPES.find(([v]) => v === animal.animal_type)?.[1] || animal.animal_type}
-                {animal.breed && ` · ${animal.breed}`}
+                {animal.breed && ` Â· ${animal.breed}`}
               </p>
-              <p>{animal.age_years !== null ? `${animal.age_years} ${t('livestock.yrs')}` : t('livestock.ageUnknown')} · {animal.status}</p>
+              <p>{animal.age_years !== null ? `${animal.age_years} ${t('livestock.yrs')}` : t('livestock.ageUnknown')} Â· {animal.status}</p>
               {dueLabel(animal) && <p className="animal-due">{dueLabel(animal)}</p>}
             </Link>
           ))}

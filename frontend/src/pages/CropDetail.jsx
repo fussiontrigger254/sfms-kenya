@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './CropDetail.css'
 
 export default function CropDetail() {
@@ -31,7 +32,7 @@ export default function CropDetail() {
   const fetchCrop = async () => {
     setLoading(true)
     try {
-      const res = await apiClient.get(`crops/${id}/`)
+      const res = await offlineApi.get(`crops/${id}/`)
       setCrop(res.data)
     } catch (err) {
       setError('Could not load crop.')
@@ -48,7 +49,7 @@ export default function CropDetail() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('sprays/', { ...sprayData, crop: id })
+      await offlineApi.post('sprays/', { ...sprayData, crop: id })
       setSprayData({ spray_date: '', product_used: '', notes: '' })
       setShowSprayForm(false)
       fetchCrop()
@@ -61,7 +62,7 @@ export default function CropDetail() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('harvests/', { ...harvestData, crop: id })
+      await offlineApi.post('harvests/', { ...harvestData, crop: id })
       setHarvestData({
         harvest_date: '',
         expected_yield_kg: '',
@@ -84,7 +85,7 @@ export default function CropDetail() {
       <Link to="/crops" className="back-link">{t('cropDetail.back')}</Link>
       <h1>{crop.crop_name}</h1>
       {crop.variety && <p className="crop-variety">{crop.variety}</p>}
-      <p>{t('cropDetail.status')}: {crop.status} · {crop.plot_size} {t('farms.acres')}</p>
+      <p>{t('cropDetail.status')}: {crop.status} Â· {crop.plot_size} {t('farms.acres')}</p>
       <p>{t('cropDetail.planted')}: {crop.planting_date}</p>
       {crop.next_spray_date && (
         <p className="crop-next-spray">
@@ -131,7 +132,7 @@ export default function CropDetail() {
         ) : (
           crop.spray_logs.map((s) => (
             <div key={s.id} className="crop-log-item">
-              <strong>{s.spray_date}</strong> {s.product_used && `· ${s.product_used}`}
+              <strong>{s.spray_date}</strong> {s.product_used && `Â· ${s.product_used}`}
               {s.notes && <p className="crop-log-notes">{s.notes}</p>}
             </div>
           ))
@@ -193,9 +194,9 @@ export default function CropDetail() {
         ) : (
           crop.harvest_logs.map((h) => (
             <div key={h.id} className="crop-log-item">
-              <strong>{h.harvest_date}</strong> · {h.actual_yield_kg}kg
+              <strong>{h.harvest_date}</strong> Â· {h.actual_yield_kg}kg
               {' '}({h.yield_variance_kg >= 0 ? '+' : ''}{h.yield_variance_kg}kg {t('cropDetail.vsExpected')})
-              · {t('cropDetail.grade')} {h.quality_grade}
+              Â· {t('cropDetail.grade')} {h.quality_grade}
               {h.notes && <p className="crop-log-notes">{h.notes}</p>}
             </div>
           ))

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './Crops.css'
 
 export default function Crops() {
@@ -27,8 +28,8 @@ export default function Crops() {
     setLoading(true)
     try {
       const [cropsRes, farmsRes] = await Promise.all([
-        apiClient.get('crops/'),
-        apiClient.get('farms/'),
+        offlineApi.get('crops/'),
+        offlineApi.get('farms/'),
       ])
       setCrops(cropsRes.data)
       setFarms(farmsRes.data)
@@ -51,7 +52,7 @@ export default function Crops() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('crops/', formData)
+      await offlineApi.post('crops/', formData)
       setFormData({
         farm: '',
         crop_name: '',
@@ -151,7 +152,7 @@ export default function Crops() {
             <Link to={`/crops/${crop.id}`} key={crop.id} className="crop-card">
               <h3>{crop.crop_name}</h3>
               {crop.variety && <p className="crop-variety">{crop.variety}</p>}
-              <p>{crop.plot_size} {t('farms.acres')} · {crop.status}</p>
+              <p>{crop.plot_size} {t('farms.acres')} Â· {crop.status}</p>
               <p className="crop-spray">{sprayLabel(crop)}</p>
             </Link>
           ))}

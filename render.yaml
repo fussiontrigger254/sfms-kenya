@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: sfms-django
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python sfms/manage.py collectstatic --no-input && python sfms/manage.py migrate
+    startCommand: gunicorn sfms.wsgi:application --chdir sfms
+    healthCheckPath: /health/
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sfms-postgres
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.11"
+
+  - type: worker
+    name: sfms-celery-worker
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A sfms worker --loglevel=info --workdir sfms
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sfms-postgres
+          property: connectionString
+      - key: SECRET_KEY
+        fromService:
+          type: web
+          name: sfms-django
+          envVarKey: SECRET_KEY
+
+  - type: redis
+    name: sfms-redis
+    plan: free
+    ipAllowList: []
+
+  - type: pserv
+    name: sfms-postgres
+    runtime: postgresql
+    plan: free
+    databaseName: sfms_db
+    user: sfms_user

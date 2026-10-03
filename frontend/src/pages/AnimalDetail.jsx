@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './AnimalDetail.css'
 
 export default function AnimalDetail() {
@@ -25,7 +26,7 @@ export default function AnimalDetail() {
   const fetchAnimal = async () => {
     setLoading(true)
     try {
-      const res = await apiClient.get(`animals/${id}/`)
+      const res = await offlineApi.get(`animals/${id}/`)
       setAnimal(res.data)
     } catch (err) {
       setError('Could not load animal.')
@@ -46,7 +47,7 @@ export default function AnimalDetail() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('health/', { ...formData, animal: id })
+      await offlineApi.post('health/', { ...formData, animal: id })
       setFormData({
         record_type: 'vaccination',
         product_used: '',
@@ -70,11 +71,11 @@ export default function AnimalDetail() {
       <Link to="/livestock" className="back-link">{t('animalDetail.back')}</Link>
       <h1>{animal.animal_tag}</h1>
       <p>
-        {animal.animal_type}{animal.breed && ` · ${animal.breed}`}
-        {' · '}{animal.gender}
-        {animal.age_years !== null && ` · ${animal.age_years} ${t('livestock.yrs')}`}
+        {animal.animal_type}{animal.breed && ` Â· ${animal.breed}`}
+        {' Â· '}{animal.gender}
+        {animal.age_years !== null && ` Â· ${animal.age_years} ${t('livestock.yrs')}`}
       </p>
-      <p>{t('animalDetail.status')}: {animal.status}{animal.weight_kg && ` · ${animal.weight_kg}kg`}</p>
+      <p>{t('animalDetail.status')}: {animal.status}{animal.weight_kg && ` Â· ${animal.weight_kg}kg`}</p>
 
       {error && <p className="animal-detail-error">{error}</p>}
 
@@ -138,8 +139,8 @@ export default function AnimalDetail() {
         ) : (
           animal.health_records.map((r) => (
             <div key={r.id} className="animal-log-item">
-              <strong>{r.record_type}</strong> — {r.date_given}
-              {r.product_used && ` · ${r.product_used}`}
+              <strong>{r.record_type}</strong> â€” {r.date_given}
+              {r.product_used && ` Â· ${r.product_used}`}
               {r.next_due_date && (
                 <p className="animal-log-due">
                   {t('animalDetail.nextDue')}: {r.next_due_date}

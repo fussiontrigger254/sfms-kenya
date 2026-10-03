@@ -1,6 +1,7 @@
 // frontend/src/pages/Weather.jsx
 import { useState, useEffect } from 'react'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './Weather.css'
 
 export default function Weather() {
@@ -13,7 +14,7 @@ export default function Weather() {
   useEffect(() => {
     const fetchFarms = async () => {
       try {
-        const res = await apiClient.get('farms/')
+        const res = await offlineApi.get('farms/')
         setFarms(res.data)
         if (res.data.length > 0) setSelectedFarm(res.data[0].id)
       } catch (err) {
@@ -31,7 +32,7 @@ export default function Weather() {
       setError('')
       setWeather(null)
       try {
-        const res = await apiClient.get(`weather/${selectedFarm}/`)
+        const res = await offlineApi.get(`weather/${selectedFarm}/`)
         setWeather(res.data)
       } catch (err) {
         if (err.response?.status === 400) {
@@ -67,9 +68,9 @@ export default function Weather() {
         <>
           {weather.spray_conflicts.length > 0 && (
             <div className="weather-alert">
-              ⚠️ Rain expected on a scheduled spray date:
+              âš ï¸ Rain expected on a scheduled spray date:
               {weather.spray_conflicts.map((c, i) => (
-                <p key={i}>{c.crop_name} — spray due {c.next_spray_date}. Consider rescheduling.</p>
+                <p key={i}>{c.crop_name} â€” spray due {c.next_spray_date}. Consider rescheduling.</p>
               ))}
             </div>
           )}
@@ -78,9 +79,9 @@ export default function Weather() {
             {weather.forecast.map((day) => (
               <div key={day.date} className={`weather-day ${day.rain_expected ? 'weather-day-rain' : ''}`}>
                 <p className="weather-date">{day.date}</p>
-                <p className="weather-temp">{day.temp_min}° – {day.temp_max}°C</p>
+                <p className="weather-temp">{day.temp_min}Â° â€“ {day.temp_max}Â°C</p>
                 <p className="weather-condition">{day.condition}</p>
-                {day.rain_expected && <p className="weather-rain">🌧️ {day.rain_mm}mm expected</p>}
+                {day.rain_expected && <p className="weather-rain">ðŸŒ§ï¸ {day.rain_mm}mm expected</p>}
               </div>
             ))}
           </div>

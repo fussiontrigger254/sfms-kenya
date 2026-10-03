@@ -1,6 +1,7 @@
 // frontend/src/pages/Community.jsx
 import { useState, useEffect } from 'react'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './Community.css'
 
 const POST_TYPES = [
@@ -40,7 +41,7 @@ export default function Community() {
       if (filters.county.trim()) params.county = filters.county.trim()
       if (filters.search.trim()) params.search = filters.search.trim()
 
-      const res = await apiClient.get('community/posts/', { params })
+      const res = await offlineApi.get('community/posts/', { params })
       setPosts(res.data)
     } catch (err) {
       setError('Could not load community posts.')
@@ -75,7 +76,7 @@ export default function Community() {
       if (formData.price_kes !== '') {
         payload.price_kes = formData.price_kes
       }
-      await apiClient.post('community/posts/', payload)
+      await offlineApi.post('community/posts/', payload)
       setFormData(emptyForm)
       setShowForm(false)
       fetchPosts()

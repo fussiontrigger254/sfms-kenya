@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './SoilLogs.css'
 
 export default function SoilLogs() {
@@ -25,8 +26,8 @@ export default function SoilLogs() {
     setLoading(true)
     try {
       const [logsRes, farmsRes] = await Promise.all([
-        apiClient.get('farms/soil-logs/'),
-        apiClient.get('farms/'),
+        offlineApi.get('farms/soil-logs/'),
+        offlineApi.get('farms/'),
       ])
       setLogs(logsRes.data)
       setFarms(farmsRes.data)
@@ -49,7 +50,7 @@ export default function SoilLogs() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('farms/soil-logs/', formData)
+      await offlineApi.post('farms/soil-logs/', formData)
       setFormData({
         farm: '',
         test_date: '',

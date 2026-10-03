@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './Tasks.css'
 
 export default function Tasks() {
@@ -24,8 +25,8 @@ export default function Tasks() {
     setLoading(true)
     try {
       const [tasksRes, farmsRes] = await Promise.all([
-        apiClient.get('farms/tasks/'),
-        apiClient.get('farms/'),
+        offlineApi.get('farms/tasks/'),
+        offlineApi.get('farms/'),
       ])
       setTasks(tasksRes.data)
       setFarms(farmsRes.data)
@@ -48,7 +49,7 @@ export default function Tasks() {
     e.preventDefault()
     setError('')
     try {
-      await apiClient.post('farms/tasks/', formData)
+      await offlineApi.post('farms/tasks/', formData)
       setFormData({ farm: '', title: '', frequency: 'daily', due_date: '', notes: '' })
       setShowForm(false)
       fetchData()
@@ -60,7 +61,7 @@ export default function Tasks() {
   const toggleStatus = async (task) => {
     const newStatus = task.status === 'completed' ? 'pending' : 'completed'
     try {
-      await apiClient.patch(`farms/tasks/${task.id}/`, { status: newStatus })
+      await offlineApi.patch(`farms/tasks/${task.id}/`, { status: newStatus })
       setTasks(tasks.map((t) => (t.id === task.id ? { ...t, status: newStatus } : t)))
     } catch (err) {
       setError(t('tasks.error'))
@@ -142,8 +143,8 @@ export default function Tasks() {
                 <div className="task-item-content">
                   <p className="task-title">{task.title}</p>
                   <p className="task-meta">
-                    {farmName(task.farm)} · {task.frequency.replace('_', '-')}
-                    {task.due_date && ` · due ${task.due_date}`}
+                    {farmName(task.farm)} Â· {task.frequency.replace('_', '-')}
+                    {task.due_date && ` Â· due ${task.due_date}`}
                   </p>
                 </div>
               </div>

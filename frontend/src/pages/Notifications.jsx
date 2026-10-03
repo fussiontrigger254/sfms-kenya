@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import './Notifications.css'
 
 export default function Notifications() {
@@ -21,7 +22,7 @@ export default function Notifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await apiClient.get('notifications/')
+        const res = await offlineApi.get('notifications/')
         setNotifications(res.data)
       } catch (err) {
         setError(t('notifications.error'))

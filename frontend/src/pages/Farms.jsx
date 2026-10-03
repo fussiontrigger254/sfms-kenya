@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import apiClient from '../api/client'
+import offlineApi from '../services/offlineApi'
 import 'leaflet/dist/leaflet.css'
 import './Farms.css'
 
@@ -53,7 +54,7 @@ export default function Farms() {
   const fetchFarms = async () => {
     setLoading(true)
     try {
-      const res = await apiClient.get('farms/')
+      const res = await offlineApi.get('farms/')
       setFarms(res.data)
     } catch (err) {
       setError(t('farms.error'))
@@ -139,9 +140,9 @@ export default function Farms() {
 
     try {
       if (editingFarm) {
-        await apiClient.patch(`farms/${editingFarm.id}/`, payload)
+        await offlineApi.patch(`farms/${editingFarm.id}/`, payload)
       } else {
-        await apiClient.post('farms/', payload)
+        await offlineApi.post('farms/', payload)
       }
 
       closeForm()
@@ -160,7 +161,7 @@ export default function Farms() {
 
     setError('')
     try {
-      await apiClient.delete(`farms/${farm.id}/`)
+      await offlineApi.delete(`farms/${farm.id}/`)
       setFarms((currentFarms) => currentFarms.filter((item) => item.id !== farm.id))
     } catch (err) {
       setError(t('farms.error'))
@@ -231,7 +232,7 @@ export default function Farms() {
               <div className="farm-card-content">
                 <h3>{farm.farm_name}</h3>
                 <p>{farm.location}</p>
-                <p>{farm.farm_size} {t('farms.acres')} · {farm.farm_type}</p>
+                <p>{farm.farm_size} {t('farms.acres')} Â· {farm.farm_type}</p>
               </div>
               <div className="farm-actions">
                 <button className="farm-edit-button" onClick={() => openEditForm(farm)}>Edit</button>
