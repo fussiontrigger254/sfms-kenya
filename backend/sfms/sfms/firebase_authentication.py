@@ -1,4 +1,6 @@
+# backend/sfms/sfms/firebase_authentication.py
 import os
+import json
 from pathlib import Path
 
 import firebase_admin
@@ -13,12 +15,21 @@ def initialize_firebase():
     if firebase_admin._apps:
         return
 
-    cred_path = os.environ.get(
+    cred_value = os.environ.get(
         "FIREBASE_CREDENTIALS",
         "/app/sfms/sfms/serviceAccountKey.json",
     )
 
-    cred = credentials.Certificate(cred_path)
+    # If it looks like JSON content (starts with '{'), parse it directly —
+    # this is how we'll supply it on Render, where there's no file to point to.
+    # Otherwise, treat it as a file path — this is the existing local Docker setup.
+    stripped = cred_value.strip()
+    if stripped.startswith("{"):
+        cred_dict = json.loads(stripped)
+        cred = credentials.Certificate(cred_dict)
+    else:
+        cred = credentials.Certificate(cred_value)
+
     firebase_admin.initialize_app(cred)
 
 
@@ -26,7 +37,7 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.META.get("HTTP_AUTHORIZATION", "")
         if not auth_header.startswith("Bearer "):
-            return None  # let other auth backends handle it / anonymous if allowed
+            return None
 
         id_token = auth_header.split("Bearer ", 1)[1].strip()
         if not id_token:

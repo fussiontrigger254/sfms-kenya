@@ -124,7 +124,7 @@ CELERY_WORKER_POOL = 'solo'
 
 # Africa's Talking
 AT_USERNAME = 'sandbox'
-AT_API_KEY = '6cba9bed5bbdfa4d140a4ba47dcaea7fe7855e06ae21fd3054a2ac732b914c56d738d35d'
+AT_API_KEY = os.environ.get('AFRICASTALKING_API_KEY', 'YOUR_API_KEY')
 AT_SENDER_ID = 'SFMS'
 
 LANGUAGE_CODE = 'en-us'
