@@ -19,6 +19,7 @@ import { useAuth } from './context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import apiClient from './api/client'
 import { useSyncStatus } from './services/offlineSync'
+import offlineApi from './services/offlineApi'
 import './App.css'
 // --- SVG Micro-Icons ---
 function FarmIcon() {
@@ -123,6 +124,11 @@ function Home() {
   const { user, logout } = useAuth()
   const { t, i18n } = useTranslation()
   const [summary, setSummary] = useState(null)
+  const [farms, setFarms] = useState([])
+  const [selectedFarmId, setSelectedFarmId] = useState(() => localStorage.getItem('sfms_selected_weather_farm') || '')
+  const [selectedWeather, setSelectedWeather] = useState(null)
+  const [weatherLoading, setWeatherLoading] = useState(false)
+  const [weatherOpen, setWeatherOpen] = useState(false)
   const [summaryError, setSummaryError] = useState('')
   const { isOnline, isSyncing, pendingCount, triggerSync } = useSyncStatus()
 
@@ -139,6 +145,17 @@ function Home() {
 
     // 2. Fetch fresh from server when online
     if (navigator.onLine) {
+      offlineApi.get('farms/')
+        .then((response) => {
+          const savedFarms = Array.isArray(response.data) ? response.data : []
+          setFarms(savedFarms)
+          setSelectedFarmId((current) => {
+            const saved = savedFarms.find((farm) => String(farm.id) === String(current))
+            return saved ? String(saved.id) : savedFarms[0] ? String(savedFarms[0].id) : ''
+          })
+        })
+        .catch(() => {})
+
       apiClient.get('dashboard/summary/')
         .then((response) => {
           setSummary(response.data)
@@ -154,6 +171,42 @@ function Home() {
   const formatDate = (value) => value ? new Date(`${value}T00:00:00`).toLocaleDateString('en-KE', { day: 'numeric', month: 'short' }) : ''
   const formatKES = (value) => `KES ${Number(value || 0).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
+  useEffect(() => {
+    if (!selectedFarmId) {
+      setSelectedWeather(null)
+      return
+    }
+
+    localStorage.setItem('sfms_selected_weather_farm', selectedFarmId)
+    const cachedWeather = localStorage.getItem(`sfms_weather_${selectedFarmId}`)
+    if (cachedWeather) {
+      try {
+        setSelectedWeather(JSON.parse(cachedWeather))
+      } catch {
+        localStorage.removeItem(`sfms_weather_${selectedFarmId}`)
+      }
+    }
+
+    if (!navigator.onLine) return
+
+    setWeatherLoading(true)
+    apiClient.get(`weather/${selectedFarmId}/`)
+      .then((response) => {
+        setSelectedWeather(response.data)
+        localStorage.setItem(`sfms_weather_${selectedFarmId}`, JSON.stringify(response.data))
+      })
+      .catch(() => {})
+      .finally(() => setWeatherLoading(false))
+  }, [selectedFarmId])
+
+  const selectedFarm = farms.find((farm) => String(farm.id) === String(selectedFarmId))
+  const farmLocation = selectedFarm?.location || 'Your farm location'
+  const currentForecast = selectedWeather?.forecast?.[0]
+  const weatherSummary = currentForecast
+    ? `${currentForecast.temp_min}°–${currentForecast.temp_max}°C · ${currentForecast.condition}`
+    : weatherLoading
+      ? 'Loading weather...'
+      : 'View farm forecast'
   const farmerName = user?.displayName || user?.email?.split('@')[0] || 'Farmer'
 
   const renderUrgencyBadge = (daysLeft, dueDate) => {
@@ -236,13 +289,46 @@ function Home() {
           <p>{t('dashboard.welcomeSub')}</p>
         </div>
 
-        <div className="hero-weather-card">
+        <button
+          type="button"
+          className="hero-weather-card"
+          onClick={() => setWeatherOpen((open) => !open)}
+          aria-expanded={weatherOpen}
+          aria-label="Select farm weather"
+        >
           <div className="weather-icon-badge">⛅</div>
           <div className="weather-meta">
-            <span className="weather-title">Nakuru / Kenya</span>
-            <span className="weather-sub">Real-time Agro Operations</span>
+            <span className="weather-title">{farmLocation}</span>
+            <span className="weather-sub">{weatherSummary}</span>
           </div>
-        </div>
+          <span className="weather-selector-chevron">⌄</span>
+        </button>
+        {weatherOpen && (
+          <div className="weather-picker" role="dialog" aria-label="Farm weather selection">
+            <div className="weather-picker-title">Select farm weather</div>
+            {farms.length === 0 ? (
+              <p>No saved farms yet.</p>
+            ) : (
+              farms.map((farm) => (
+                <button
+                  type="button"
+                  key={farm.id}
+                  className={String(farm.id) === String(selectedFarmId) ? 'weather-farm-option selected' : 'weather-farm-option'}
+                  onClick={() => {
+                    setSelectedFarmId(String(farm.id))
+                    setWeatherOpen(false)
+                  }}
+                >
+                  <span>{farm.farm_name}</span>
+                  <small>{farm.location}</small>
+                </button>
+              ))
+            )}
+            <Link to="/weather" className="weather-full-link" onClick={() => setWeatherOpen(false)}>
+              View full forecast →
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* Module Navigation Bar */}
@@ -486,10 +572,10 @@ function Home() {
           </>
         )}
       </main>
+      <footer className="dashboard-copyright">©Nate2026</footer>
     </div>
   )
 }
-
 export default function App() {
   return (
     <Routes>

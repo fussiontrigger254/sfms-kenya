@@ -3,7 +3,7 @@ import axios from 'axios'
 import { auth } from '../firebase'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/',
+  baseURL: import.meta.env.VITE_API_URL || 'https://sfms-kenya-api.onrender.com/api/',
   headers: {
     'Content-Type': 'application/json',
   },
