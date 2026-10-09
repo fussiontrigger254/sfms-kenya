@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SFMS Kenya</string>
+    <string name="title_activity_main">SFMS Kenya</string>
+    <string name="package_name">ke.sfms.app</string>
+    <string name="custom_url_scheme">ke.sfms.app</string>
+</resources>

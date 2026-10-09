@@ -2,8 +2,14 @@
 import axios from 'axios'
 import { auth } from '../firebase'
 
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://sfms-kenya-api.onrender.com/api/'
+const healthUrl = apiBaseUrl.replace(/\/api\/?$/, '/health/')
+
+fetch(healthUrl, { method: 'GET', cache: 'no-store' }).catch(() => {})
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://sfms-kenya-api.onrender.com/api/',
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },
