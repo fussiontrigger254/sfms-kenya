@@ -1,9 +1,14 @@
 # backend/sfms/farms/serializers.py
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from .models import Farm, SoilLog, Task
 
 
 class FarmSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(
+        required=False,
+        validators=[UniqueValidator(queryset=Farm.objects.all())],
+    )
     class Meta:
         model = Farm
         fields = [
@@ -16,10 +21,14 @@ class FarmSerializer(serializers.ModelSerializer):
             'farm_type',
             'created_at',
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['created_at']
 
 
 class SoilLogSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(
+        required=False,
+        validators=[UniqueValidator(queryset=SoilLog.objects.all())],
+    )
     class Meta:
         model = SoilLog
         fields = [
@@ -32,10 +41,14 @@ class SoilLogSerializer(serializers.ModelSerializer):
             'notes',
             'created_at',
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['created_at']
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(
+        required=False,
+        validators=[UniqueValidator(queryset=Task.objects.all())],
+    )
     class Meta:
         model = Task
         fields = [

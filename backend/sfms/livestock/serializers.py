@@ -1,9 +1,14 @@
 from datetime import date
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from .models import Animal, HealthRecord
 
 
 class HealthRecordSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(
+        required=False,
+        validators=[UniqueValidator(queryset=HealthRecord.objects.all())],
+    )
     days_to_next_due = serializers.SerializerMethodField()
 
     class Meta:
@@ -13,7 +18,7 @@ class HealthRecordSerializer(serializers.ModelSerializer):
             'date_given', 'next_due_date', 'days_to_next_due',
             'administered_by', 'notes', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['created_at']
 
     def get_days_to_next_due(self, obj):
         """
@@ -27,6 +32,10 @@ class HealthRecordSerializer(serializers.ModelSerializer):
 
 
 class AnimalSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(
+        required=False,
+        validators=[UniqueValidator(queryset=Animal.objects.all())],
+    )
     health_records   = HealthRecordSerializer(many=True, read_only=True)
     age_years        = serializers.SerializerMethodField()
 
@@ -40,7 +49,7 @@ class AnimalSerializer(serializers.ModelSerializer):
             'health_records',
             'created_at',
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['created_at']
 
     def get_age_years(self, obj):
         """Calculate animal age in years from birth_date."""

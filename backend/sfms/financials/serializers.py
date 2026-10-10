@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from crops.models import Crop
 from farms.models import Farm
@@ -8,6 +9,10 @@ from .models import FinancialRecord
 
 
 class FinancialRecordSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(
+        required=False,
+        validators=[UniqueValidator(queryset=FinancialRecord.objects.all())],
+    )
     farm_name = serializers.CharField(
         source="farm.farm_name",
         read_only=True,
@@ -44,7 +49,6 @@ class FinancialRecordSerializer(serializers.ModelSerializer):
         ]
 
         read_only_fields = [
-            "id",
             "farm_name",
             "crop_name",
             "animal_tag",
