@@ -1,6 +1,8 @@
 // frontend/src/pages/Farms.jsx
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Capacitor } from '@capacitor/core'
+import { Geolocation } from '@capacitor/geolocation'
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import apiClient from '../api/client'
@@ -79,22 +81,38 @@ export default function Farms() {
     }))
   }
 
-  const useCurrentLocation = () => {
+  const useCurrentLocation = async () => {
     setError('')
 
-    if (!navigator.geolocation) {
-      setError('Your browser does not support location detection.')
-      return
-    }
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const permission = await Geolocation.requestPermissions()
+        if (permission.location === 'denied') {
+          throw new Error('Location permission was denied.')
+        }
+        const position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000,
+        })
+        setCoordinates(position.coords.latitude, position.coords.longitude)
+        return
+      }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => setCoordinates(
-        position.coords.latitude,
-        position.coords.longitude,
-      ),
-      () => setError('Unable to detect your location. Allow location access or enter coordinates manually.'),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
-    )
+      if (!navigator.geolocation) {
+        throw new Error('Your browser does not support location detection.')
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => setCoordinates(
+          position.coords.latitude,
+          position.coords.longitude,
+        ),
+        () => setError('Unable to detect your location. Allow location access or enter coordinates manually.'),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+      )
+    } catch (locationError) {
+      setError(locationError.message || 'Unable to detect your location. Allow location access or enter coordinates manually.')
+    }
   }
 
   const openCreateForm = () => {

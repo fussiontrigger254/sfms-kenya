@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -80,7 +80,9 @@ class DashboardSummaryView(APIView):
 
         # --- Tasks pending and due today or earlier ---
         tasks_qs = Task.objects.filter(
-            farm__in=farms, status="pending", due_date__isnull=False, due_date__lte=today
+            farm__in=farms, status="pending",
+        ).filter(
+            Q(due_date__isnull=True) | Q(due_date__lte=today)
         ).order_by("due_date")[:MAX_ITEMS]
         tasks = [
             {"task_id": str(t.id), "title": t.title, "due_date": t.due_date}

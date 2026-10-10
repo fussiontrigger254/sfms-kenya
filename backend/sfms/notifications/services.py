@@ -1,8 +1,11 @@
+import logging
 from datetime import timedelta
 import re
 
 from .models import Notification
 
+
+logger = logging.getLogger(__name__)
 
 FIREBASE_UID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{20,}$")
 
@@ -44,7 +47,10 @@ class NotificationService:
         )
 
         from notifications.tasks import send_notification_task
-        send_notification_task.delay(str(notification.id))
+        try:
+            send_notification_task.delay(str(notification.id))
+        except Exception:
+            logger.exception("Could not queue notification %s", notification.id)
 
         return notification
 
@@ -75,6 +81,9 @@ class NotificationService:
         )
 
         from notifications.tasks import send_notification_task
-        send_notification_task.delay(str(notification.id))
+        try:
+            send_notification_task.delay(str(notification.id))
+        except Exception:
+            logger.exception("Could not queue notification %s", notification.id)
 
         return notification
