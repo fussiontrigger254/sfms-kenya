@@ -39,16 +39,13 @@ export async function processSyncQueue() {
         // Successfully synced — remove from queue
         await db.sync_queue.delete(item.id)
       } catch (err) {
-        // If network error, stop sync and try again later
-        if (!err.response) {
-          console.warn('[Sync] Network error during sync queue replay, will retry when connected.')
+        const status = err.response?.status
+        if (!err.response || status >= 500 || [401, 403, 408, 429].includes(status)) {
+          console.warn(`[Sync] Retaining queued task ${item.id}; will retry later.`, err.response?.data || err)
           break
         }
-        // If it's a 4xx error (e.g. invalid data or already deleted), remove to prevent blockage
-        if (err.response.status >= 400 && err.response.status < 500) {
-          console.warn(`[Sync] Discarding invalid queued task ${item.id}:`, err.response.data)
-          await db.sync_queue.delete(item.id)
-        }
+        console.warn(`[Sync] Discarding invalid queued task ${item.id}:`, err.response.data)
+        await db.sync_queue.delete(item.id)
       }
     }
   } catch (error) {

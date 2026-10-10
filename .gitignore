@@ -22,3 +22,5 @@ Thumbs.db
 
 # Firebase
 backend/sfms/sfms/firebase-service-account.json
+frontend/android_old/
+frontend/android/local.properties

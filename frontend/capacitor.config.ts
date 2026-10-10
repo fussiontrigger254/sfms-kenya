@@ -1,9 +1,9 @@
-import type { CapacitorConfig } from '@capacitor/cli'
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'ke.sfms.app',
+  appId: 'com.sfms.kenya',
   appName: 'SFMS Kenya',
-  webDir: 'dist',
-}
+  webDir: 'dist'
+};
 
-export default config
+export default config;

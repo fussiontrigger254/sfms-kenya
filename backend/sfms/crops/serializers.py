@@ -1,9 +1,11 @@
 from datetime import date
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from .models import Crop, SprayLog, HarvestLog
 
 
 class SprayLogSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(required=False, validators=[UniqueValidator(queryset=SprayLog.objects.all())])
 
     class Meta:
         model  = SprayLog
@@ -11,10 +13,11 @@ class SprayLogSerializer(serializers.ModelSerializer):
             'id', 'crop', 'spray_date',
             'product_used', 'notes', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['created_at']
 
 
 class HarvestLogSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(required=False, validators=[UniqueValidator(queryset=HarvestLog.objects.all())])
     yield_variance_kg = serializers.SerializerMethodField()
 
     class Meta:
@@ -25,7 +28,7 @@ class HarvestLogSerializer(serializers.ModelSerializer):
             'yield_variance_kg', 'quality_grade',
             'notes', 'created_at'
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['created_at']
 
     def get_yield_variance_kg(self, obj):
         """Positive = exceeded target. Negative = underperformed."""
@@ -33,6 +36,7 @@ class HarvestLogSerializer(serializers.ModelSerializer):
 
 
 class CropSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(required=False, validators=[UniqueValidator(queryset=Crop.objects.all())])
     spray_logs         = SprayLogSerializer(many=True, read_only=True)
     harvest_logs       = HarvestLogSerializer(many=True, read_only=True)
     days_to_next_spray = serializers.SerializerMethodField()
@@ -49,7 +53,7 @@ class CropSerializer(serializers.ModelSerializer):
             'created_at',
         ]
         read_only_fields = [
-            'id', 'last_spray_date',
+            'last_spray_date',
             'next_spray_date', 'created_at'
         ]
 
